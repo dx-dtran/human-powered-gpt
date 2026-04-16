@@ -1,0 +1,44 @@
+=== train_bike_char  2026-04-16 11:56:51 ===
+loading /Users/daniel/PycharmProjects/human-powered-gpt/dataset.txt...
+vocab size    : 35 chars
+train tokens  : 793,412   val tokens: 88,157
+parameters    : 108,323
+context length: 64   d_embed: 64   layers: 2   heads: 4
+batch size    : 64   max iters: 2000   lr: 0.003 -> 0.0001
+device        : cpu
+flops/step    : 2.7 GFLOPs
+
+step 0/2000 | 11:56:52 | lr 0.00300 | train 3.3954 | val 3.3995 | 0.5s | 2.7 GFLOPs | 24.70 GFLOPs/s | eta 17m 33s [saved]
+
+sample text:
+ j kinp iAlEuknehouatdpvmvmyafmhxwq cDrcgunAerpiD ] tykislb i
+ipuHie[w[rvk.kciryg.ry[mAi]rrAecgrrd eelulyNy]d.e qgEur
+ga
+
+step 500/2000 | 11:57:10 | lr 0.00257 | train 0.6538 | val 0.6632 | 18.1s | 1.33 TFLOPs | 77.54 GFLOPs/s | eta 54s [saved]
+
+sample text:
+[H] i right now [A] begos your current is gortem the lights does my in [A] until then. your lungs ireat. do not stop. [E
+
+step 1000/2000 | 11:57:28 | lr 0.00155 | train 0.4322 | val 0.4159 | 36.3s | 2.66 TFLOPs | 75.38 GFLOPs/s | eta 36s [saved]
+
+sample text:
+[H] what is the pedals not stopping [A] your watts is so waiting so much. that is ours. [END]
+[H] my plean. your are ver
+
+step 1500/2000 | 11:57:47 | lr 0.00052 | train 0.3609 | val 0.3613 | 55.7s | 4.00 TFLOPs | 70.24 GFLOPs/s | eta 18s [saved]
+
+sample text:
+[H] tell me what today job. [END]
+[H] is there any hope for me [A] ride energy. ins am deelpungs. you are full today. ke
+
+step 1999/2000 | 11:58:06 | lr 0.00010 | train 0.3416 | val 0.3452 | 74.6s | 5.32 TFLOPs | 71.85 GFLOPs/s | eta done [saved]
+
+sample text:
+[H] why am i on the machine. push harder. [END]
+[H] how much longer [A] all night. maybe longer. more. [END]
+[H] do you 
+
+total time : 74.6s
+best val   : 0.3452
+weights    : /Users/daniel/PycharmProjects/human-powered-gpt/weights/bike_char.pth
