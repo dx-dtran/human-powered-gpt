@@ -42,3 +42,339 @@ sample text:
 total time : 74.6s
 best val   : 0.3452
 weights    : /Users/daniel/PycharmProjects/human-powered-gpt/weights/bike_char.pth
+=== train_bike_char  2026-04-16 12:09:36 ===
+loading /Users/daniel/PycharmProjects/human-powered-gpt/dataset.txt...
+vocab size    : 35 chars
+train tokens  : 793,412   val tokens: 88,157
+parameters    : 106,432
+context length: 64   d_embed: 64   layers: 2   heads: 4
+batch size    : 64   max iters: 2000   lr: 0.003 -> 0.0001
+device        : cpu
+flops/step    : 2.6 GFLOPs
+
+=== train_bike_char  2026-04-16 12:11:25 ===
+loading /Users/daniel/PycharmProjects/human-powered-gpt/dataset.txt...
+vocab size    : 35 chars
+train tokens  : 793,412   val tokens: 88,157
+parameters    : 106,432
+context length: 64   d_embed: 64   layers: 2   heads: 4
+batch size    : 64   max iters: 2000   lr: 0.003 -> 0.0001
+device        : cpu
+flops/step    : 2.6 GFLOPs
+
+step 0/2000 | 12:11:26 | lr 0.00300 | train 35.8495 | val 35.9238 | 0.5s | 2.6 GFLOPs | 23.41 GFLOPs/s | eta 17m 01s [saved]
+
+sample text:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+step 500/2000 | 12:11:52 | lr 0.00257 | train 1.5795 | val 1.6129 | 26.5s | 1.31 TFLOPs | 51.19 GFLOPs/s | eta 1m 19s [saved]
+
+sample text:
+[H] i no ju fe are it st is you thilcar [A] fr nobict do the that. mpeg. [END]
+[H] wo ce i wit us [A] peabre stoinep uni
+
+step 1000/2000 | 12:12:18 | lr 0.00155 | train 1.1450 | val 1.1395 | 52.6s | 2.62 TFLOPs | 51.02 GFLOPs/s | eta 52s [saved]
+
+sample text:
+[H] thery uur sto more. [END]
+[H] whis is we an whow mucdid my spams. light are fore. [END]
+[H] i will give sy we. me yo
+
+step 1500/2000 | 12:12:46 | lr 0.00052 | train 0.9460 | val 0.9432 | 80.7s | 3.93 TFLOPs | 47.43 GFLOPs/s | eta 26s [saved]
+
+sample text:
+[H] i care fee it there fule heat off rights [A] you doing you me fride heat one. not more. dig deep. [END]
+[H] i going 
+
+step 1999/2000 | 12:13:14 | lr 0.00010 | train 0.9061 | val 0.8995 | 108.2s | 5.23 TFLOPs | 48.13 GFLOPs/s | eta done [saved]
+
+sample text:
+[H] are verythis the my yes. pump. [END]
+[H] do i right nothing [A] push have us. give us. we light not full. dig do you
+
+total time : 108.2s
+best val   : 0.8995
+weights    : /Users/daniel/PycharmProjects/human-powered-gpt/weights/bike_char.pth
+=== train_bike_char  2026-04-16 12:22:38 ===
+loading /Users/daniel/PycharmProjects/human-powered-gpt/dataset.txt...
+vocab size    : 35 chars
+train tokens  : 793,412   val tokens: 88,157
+parameters    : 106,432
+context length: 64   d_embed: 64   layers: 2   heads: 4
+batch size    : 64   max iters: 2000   lr: 0.003 -> 0.0001
+device        : cpu
+flops/step    : 2.6 GFLOPs
+
+step 0/2000 | 12:22:39 | lr 0.00300 | train 35.8495 | val 35.9238 | 0.5s | 2.6 GFLOPs | 27.09 GFLOPs/s | eta 16m 28s [saved]
+
+sample text:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+step 500/2000 | 12:23:05 | lr 0.00257 | train 1.5795 | val 1.6129 | 26.1s | 1.31 TFLOPs | 51.86 GFLOPs/s | eta 1m 18s [saved]
+
+sample text:
+[H] i no ju fe are it st is you thilcar [A] fr nobict do the that. mpeg. [END]
+[H] wo ce i wit us [A] peabre stoinep uni
+
+step 1000/2000 | 12:23:32 | lr 0.00155 | train 1.1450 | val 1.1395 | 53.7s | 2.62 TFLOPs | 48.17 GFLOPs/s | eta 53s [saved]
+
+sample text:
+[H] thery uur sto more. [END]
+[H] whis is we an whow mucdid my spams. light are fore. [END]
+[H] i will give sy we. me yo
+
+step 1500/2000 | 12:24:00 | lr 0.00052 | train 0.9460 | val 0.9432 | 81.9s | 3.93 TFLOPs | 47.23 GFLOPs/s | eta 27s [saved]
+
+sample text:
+[H] i care fee it there fule heat off rights [A] you doing you me fride heat one. not more. dig deep. [END]
+[H] i going 
+
+step 1999/2000 | 12:24:28 | lr 0.00010 | train 0.9061 | val 0.8995 | 109.6s | 5.23 TFLOPs | 47.95 GFLOPs/s | eta done [saved]
+
+sample text:
+[H] are verythis the my yes. pump. [END]
+[H] do i right nothing [A] push have us. give us. we light not full. dig do you
+
+total time : 109.6s
+best val   : 0.8995
+weights    : /Users/daniel/PycharmProjects/human-powered-gpt/weights/bike_char.pth
