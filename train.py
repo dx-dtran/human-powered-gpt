@@ -128,6 +128,8 @@ class GPT(nn.Module):
         self.drop = nn.Dropout(config.dropout)
         self.h = nn.ModuleList([Block(config) for _ in range(config.n_layer)])
         self.ln_f = nn.LayerNorm(config.n_embd, bias=config.bias)
+        nn.init.normal_(self.wte.weight, mean=0.0, std=0.02)
+        nn.init.normal_(self.wpe.weight, mean=0.0, std=0.02)
 
     def forward(self, indices, targets=None):
         b, t = indices.shape
@@ -229,14 +231,14 @@ def _fmt_eta(seconds):
 
 def train():
     context_length = 64
-    d_embed = 64
+    d_embed = 96
     n_head = 4
-    n_layer = 2
+    n_layer = 3
 
     batch_size = 64
     max_iters = 2000
-    eval_interval = 500
-    eval_iters = 10
+    eval_interval = 50
+    eval_iters = 100
     learning_rate = 3e-3
     lr_min = 1e-4
     train_val_split = 0.9
