@@ -231,12 +231,12 @@ def _fmt_eta(seconds):
 
 def train():
     context_length = 64
-    d_embed = 96
-    n_head = 4
-    n_layer = 3
+    d_embed = 48
+    n_head = 2
+    n_layer = 2
 
     batch_size = 64
-    max_iters = 2000
+    max_iters = 1985
     eval_interval = 50
     eval_iters = 100
     learning_rate = 3e-3
