@@ -229,15 +229,33 @@ def _fmt_eta(seconds):
     return f"{s // 3600}h {(s % 3600) // 60:02d}m"
 
 
+_PI_GFLOPS_S = 1.72   # Raspberry Pi 3 single-thread throughput (matches sweep.py)
+_N_CHECKPOINTS = 10   # eval checkpoints during training (matches sweep.py)
+_BUDGET_MINUTES = 30  # target wall-clock on Pi
+
+
+def _derive_train_iters(n_params, batch_size, context_length, budget_minutes=_BUDGET_MINUTES):
+    """Derive training iterations from a Pi wall-clock budget, accounting for eval overhead.
+
+    Uses the same formula as sweep.py so training dynamics are identical to a sweep run.
+    The eval overhead subtracted here uses sweep's EVAL_ITERS=10; the main loop may run
+    more eval iters for better estimates without affecting the training step count.
+    """
+    batch_tokens = batch_size * context_length
+    budget_flops = budget_minutes * 60 * _PI_GFLOPS_S * 1e9
+    # Account for eval overhead using sweep's 10-iter evals (not our 100-iter monitoring evals)
+    eval_flops = _N_CHECKPOINTS * 2 * 10 * 2 * n_params * batch_tokens
+    train_flops = max(budget_flops - eval_flops, 0)
+    return max(50, int(train_flops / (6 * n_params * batch_tokens)))
+
+
 def train():
     context_length = 64
     d_embed = 48
-    n_head = 2
+    n_head = 4  # match sweep.py N_HEAD
     n_layer = 2
 
     batch_size = 64
-    max_iters = 1985
-    eval_interval = 50
     eval_iters = 100
     learning_rate = 3e-3
     lr_min = 1e-4
@@ -275,13 +293,19 @@ def train():
             n_layer=n_layer,
             n_head=n_head,
             n_embd=d_embed,
-            dropout=0.1,
+            dropout=0.0,  # match sweep.py (dropout=0.1 was hurting loss)
             bias=True,
         )
     ).to(device)
 
     n_params = sum(p.numel() for p in mygpt.parameters())
     flops_per_step = 6 * n_params * batch_size * context_length
+
+    # Derive max_iters from the Pi budget using the same formula as sweep.py so
+    # training dynamics are identical to the corresponding sweep run.
+    max_iters = _derive_train_iters(n_params, batch_size, context_length)
+    # Space 10 eval checkpoints evenly across training (same cadence as sweep)
+    eval_interval = max(max_iters // _N_CHECKPOINTS, 1)
 
     log.log(f"vocab size    : {vocab_size} chars")
     log.log(f"train tokens  : {len(train_data):,}   val tokens: {len(val_data):,}")
