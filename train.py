@@ -229,12 +229,14 @@ def _fmt_eta(seconds):
     return f"{s // 3600}h {(s % 3600) // 60:02d}m"
 
 
-_PI_GFLOPS_S = 1.72   # Raspberry Pi 3 single-thread throughput (matches sweep.py)
-_N_CHECKPOINTS = 10   # eval checkpoints during training (matches sweep.py)
+_PI_GFLOPS_S = 1.72  # Raspberry Pi 3 single-thread throughput (matches sweep.py)
+_N_CHECKPOINTS = 10  # eval checkpoints during training (matches sweep.py)
 _BUDGET_MINUTES = 30  # target wall-clock on Pi
 
 
-def _derive_train_iters(n_params, batch_size, context_length, budget_minutes=_BUDGET_MINUTES):
+def _derive_train_iters(
+    n_params, batch_size, context_length, budget_minutes=_BUDGET_MINUTES
+):
     """Derive training iterations from a Pi wall-clock budget, accounting for eval overhead.
 
     Uses the same formula as sweep.py so training dynamics are identical to a sweep run.
@@ -360,6 +362,20 @@ def train():
             if saved:
                 best_val_loss = val_loss
                 torch.save(mygpt.state_dict(), weights_path)
+                config_path = os.path.join(_DIR, "weights", "bike_char_config.json")
+                with open(config_path, "w") as _cf:
+                    json.dump(
+                        {
+                            "block_size": context_length,
+                            "vocab_size": vocab_size,
+                            "n_layer": n_layer,
+                            "n_head": n_head,
+                            "n_embd": d_embed,
+                            "dropout": 0.0,
+                            "bias": True,
+                        },
+                        _cf,
+                    )
 
             sample_chars = []
             with torch.no_grad():

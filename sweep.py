@@ -29,8 +29,14 @@ _DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _DIR)
 
 from train import (
-    GPT, GPTConfig, Tokenizer,
-    create_vocabulary, estimate_loss, get_batch, get_data, get_train_val_data,
+    GPT,
+    GPTConfig,
+    Tokenizer,
+    create_vocabulary,
+    estimate_loss,
+    get_batch,
+    get_data,
+    get_train_val_data,
 )
 
 # Raspberry Pi 3 single-thread throughput, measured on commit e06b38b.
@@ -72,13 +78,21 @@ def run_config(cfg: SweepConfig) -> dict:
     raw_data = get_data(DATA_PATH)
     vocab, vocab_size = create_vocabulary(raw_data)
     tokenizer = Tokenizer(vocab)
-    train_data, val_data = get_train_val_data(raw_data, tokenizer, "cpu", TRAIN_VAL_SPLIT)
+    train_data, val_data = get_train_val_data(
+        raw_data, tokenizer, "cpu", TRAIN_VAL_SPLIT
+    )
 
-    model = GPT(GPTConfig(
-        block_size=CONTEXT_LENGTH, vocab_size=vocab_size,
-        n_layer=cfg.n_layer, n_head=N_HEAD, n_embd=cfg.n_embd,
-        dropout=0.0, bias=True,
-    ))
+    model = GPT(
+        GPTConfig(
+            block_size=CONTEXT_LENGTH,
+            vocab_size=vocab_size,
+            n_layer=cfg.n_layer,
+            n_head=N_HEAD,
+            n_embd=cfg.n_embd,
+            dropout=0.0,
+            bias=True,
+        )
+    )
     n_params = sum(p.numel() for p in model.parameters())
     flops_per_step = 6 * n_params * BATCH_SIZE * CONTEXT_LENGTH
 
@@ -102,7 +116,9 @@ def run_config(cfg: SweepConfig) -> dict:
 
         for step in range(cfg.max_iters):
             progress = step / max(cfg.max_iters - 1, 1)
-            lr = LR_MIN + 0.5 * (LEARNING_RATE - LR_MIN) * (1 + math.cos(math.pi * progress))
+            lr = LR_MIN + 0.5 * (LEARNING_RATE - LR_MIN) * (
+                1 + math.cos(math.pi * progress)
+            )
             for pg in opt.param_groups:
                 pg["lr"] = lr
 
@@ -113,12 +129,25 @@ def run_config(cfg: SweepConfig) -> dict:
             opt.step()
 
             if step % eval_every == 0 or step == cfg.max_iters - 1:
-                tr = estimate_loss(model, train_data, BATCH_SIZE, CONTEXT_LENGTH, EVAL_ITERS).item()
-                vl = estimate_loss(model, val_data, BATCH_SIZE, CONTEXT_LENGTH, EVAL_ITERS).item()
+                tr = estimate_loss(
+                    model, train_data, BATCH_SIZE, CONTEXT_LENGTH, EVAL_ITERS
+                ).item()
+                vl = estimate_loss(
+                    model, val_data, BATCH_SIZE, CONTEXT_LENGTH, EVAL_ITERS
+                ).item()
                 elapsed = time.time() - start
-                history.append({"step": step, "train_loss": tr, "val_loss": vl,
-                                "lr": lr, "elapsed_s": elapsed})
-                lf.write(f"{step:>6}  {tr:>8.4f}  {vl:>8.4f}  {lr:>8.5f}  {elapsed:>8.1f}\n")
+                history.append(
+                    {
+                        "step": step,
+                        "train_loss": tr,
+                        "val_loss": vl,
+                        "lr": lr,
+                        "elapsed_s": elapsed,
+                    }
+                )
+                lf.write(
+                    f"{step:>6}  {tr:>8.4f}  {vl:>8.4f}  {lr:>8.5f}  {elapsed:>8.1f}\n"
+                )
 
     elapsed = time.time() - start
     best_val = min(e["val_loss"] for e in history)
@@ -126,7 +155,8 @@ def run_config(cfg: SweepConfig) -> dict:
     return {
         "label": cfg.label,
         "budget_minutes": cfg.budget_minutes,
-        "n_layer": cfg.n_layer, "n_embd": cfg.n_embd,
+        "n_layer": cfg.n_layer,
+        "n_embd": cfg.n_embd,
         "n_params": n_params,
         "max_iters": cfg.max_iters,
         "tokens_seen": cfg.max_iters * BATCH_SIZE * CONTEXT_LENGTH,
@@ -161,12 +191,17 @@ def build_configs(dry_run):
             n_params = _count_params(n_layer, n_embd)
             iters = 20 if dry_run else _derive_iters(bm * 60, n_params)
             label = f"b{bm}m_p{n_params // 1000}k"
-            configs.append(SweepConfig(
-                label=label, budget_minutes=bm,
-                n_layer=n_layer, n_embd=n_embd,
-                max_iters=iters, seed=42 + cid,
-                log_path=os.path.join(LOGS_DIR, f"{label}.log"),
-            ))
+            configs.append(
+                SweepConfig(
+                    label=label,
+                    budget_minutes=bm,
+                    n_layer=n_layer,
+                    n_embd=n_embd,
+                    max_iters=iters,
+                    seed=42 + cid,
+                    log_path=os.path.join(LOGS_DIR, f"{label}.log"),
+                )
+            )
             cid += 1
     return configs
 
@@ -174,18 +209,23 @@ def build_configs(dry_run):
 def sweep(configs, max_workers):
     ctx = multiprocessing.get_context("fork")
     results = []
-    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as ex:
+    with concurrent.futures.ProcessPoolExecutor(
+        max_workers=max_workers, mp_context=ctx
+    ) as ex:
         futures = {ex.submit(run_config, c): c for c in configs}
         for i, fut in enumerate(concurrent.futures.as_completed(futures), 1):
             c = futures[fut]
             try:
                 r = fut.result()
                 results.append(r)
-                print(f"[{i:2d}/{len(configs)}] {c.label:<18}  "
-                      f"params={r['n_params']:>6,}  iters={r['max_iters']:>5}  "
-                      f"best_val={r['best_val_loss']:.4f}  {r['elapsed_s']/60:.1f}m")
+                print(
+                    f"[{i:2d}/{len(configs)}] {c.label:<18}  "
+                    f"params={r['n_params']:>6,}  iters={r['max_iters']:>5}  "
+                    f"best_val={r['best_val_loss']:.4f}  {r['elapsed_s']/60:.1f}m"
+                )
             except Exception as e:
                 import traceback
+
                 print(f"[{i:2d}/{len(configs)}] FAILED {c.label}: {e}")
                 traceback.print_exc()
     results.sort(key=lambda r: (r["budget_minutes"], r["n_params"]))
@@ -195,8 +235,10 @@ def sweep(configs, max_workers):
 def print_summary(results):
     print()
     print("=" * 72)
-    print(f"{'budget':>7}  {'params':>8}  {'iters':>6}  {'tok_seen':>10}  "
-          f"{'best_val':>9}  {'gap':>7}")
+    print(
+        f"{'budget':>7}  {'params':>8}  {'iters':>6}  {'tok_seen':>10}  "
+        f"{'best_val':>9}  {'gap':>7}"
+    )
     print("-" * 72)
     winners = {}
     for r in results:
@@ -205,15 +247,19 @@ def print_summary(results):
         bm = r["budget_minutes"]
         if bm not in winners or r["best_val_loss"] < winners[bm]["best_val_loss"]:
             winners[bm] = r
-        print(f"{bm:>5}m   {r['n_params']:>8,}  {r['max_iters']:>6}  "
-              f"{r['tokens_seen']:>10,}  {r['best_val_loss']:>9.4f}  {gap:>+7.4f}{marker}")
+        print(
+            f"{bm:>5}m   {r['n_params']:>8,}  {r['max_iters']:>6}  "
+            f"{r['tokens_seen']:>10,}  {r['best_val_loss']:>9.4f}  {gap:>+7.4f}{marker}"
+        )
     print("=" * 72)
     print("\nCompute-optimal winner per budget:")
     for bm in sorted(winners):
         w = winners[bm]
-        print(f"  {bm:>3}m → {w['n_params']:>6,} params  "
-              f"(n_layer={w['n_layer']}, n_embd={w['n_embd']})  "
-              f"best_val={w['best_val_loss']:.4f}")
+        print(
+            f"  {bm:>3}m → {w['n_params']:>6,} params  "
+            f"(n_layer={w['n_layer']}, n_embd={w['n_embd']})  "
+            f"best_val={w['best_val_loss']:.4f}"
+        )
 
 
 if __name__ == "__main__":
@@ -225,18 +271,24 @@ if __name__ == "__main__":
     configs = build_configs(args.dry_run)
     max_workers = min(len(configs), max(1, (os.cpu_count() or 4) - 2))
 
-    print(f"{'[DRY] ' if args.dry_run else ''}"
-          f"{len(configs)} configs × {max_workers} workers  |  "
-          f"Pi={PI_GFLOPS_S} GFLOPs/s")
-    print(f"\n{'label':<16} {'budget':>6} {'params':>8} {'iters':>7} "
-          f"{'tok_seen':>10} {'est_min':>8}")
+    print(
+        f"{'[DRY] ' if args.dry_run else ''}"
+        f"{len(configs)} configs × {max_workers} workers  |  "
+        f"Pi={PI_GFLOPS_S} GFLOPs/s"
+    )
+    print(
+        f"\n{'label':<16} {'budget':>6} {'params':>8} {'iters':>7} "
+        f"{'tok_seen':>10} {'est_min':>8}"
+    )
     for c in configs:
         n_params = _count_params(c.n_layer, c.n_embd)
         fps = 6 * n_params * BATCH_SIZE * CONTEXT_LENGTH
         est_min = c.max_iters * fps / (PI_GFLOPS_S * 1e9) / 60
         tok = c.max_iters * BATCH_SIZE * CONTEXT_LENGTH
-        print(f"{c.label:<16} {c.budget_minutes:>5}m {n_params:>8,} "
-              f"{c.max_iters:>7} {tok:>10,} {est_min:>8.1f}")
+        print(
+            f"{c.label:<16} {c.budget_minutes:>5}m {n_params:>8,} "
+            f"{c.max_iters:>7} {tok:>10,} {est_min:>8.1f}"
+        )
 
     print(f"\nStarting sweep. Live logs in {os.path.relpath(LOGS_DIR)}/\n")
     t0 = time.time()

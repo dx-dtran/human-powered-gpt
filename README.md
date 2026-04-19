@@ -6,11 +6,13 @@ This repo trains AI with the exact same neural network architecture as GPT-2, bu
 
 ## How
 
-Target hardware: Raspberry Pi 3 (2017) powered by a 5W bike dynamo. Four hours of riding ≈ the perimeter of Manhattan.
+Target hardware: Raspberry Pi 3 (2017) powered by a 5W bike dynamo. 1 hour of riding at this wattage is sufficient to train a character-level language model that can properly speak English.
 
 ```
 pip install -r requirements.txt
+```
 
+```
 python dataset_gen.py   # generate the mad-libs chat corpus (deterministic)
 python train.py         # train a char-level GPT
 python train.py chat    # chat with it
@@ -19,4 +21,6 @@ python sweep.py         # IsoFLOPs scaling sweep across compute budgets
 python plot_sweep.py    # Chinchilla-style plots of the sweep
 ```
 
-`train.py` is the whole model — nanoGPT style, one file.
+Run `python train.py` to create the model.
+
+After training is complete, run `python chat.py` to interactively chat with the model.
